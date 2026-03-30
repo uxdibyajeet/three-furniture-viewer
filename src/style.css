@@ -1,0 +1,17 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* This hides the main browser scrollbars */
+    overflow: hidden; 
+    background-color: #222222; /* Match your JS scene background */
+}
+
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
