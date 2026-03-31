@@ -1,13 +1,16 @@
+
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    font-size: 16px;
 }
+
 
 body {
     /* This hides the main browser scrollbars */
     overflow: hidden; 
-    background-color: #222222; /* Match your JS scene background */
+    background-color: #222222;
 }
 
 canvas {
@@ -48,26 +51,60 @@ canvas {
 
 .navControls {
     position: absolute;
-    bottom: 10%;
+    bottom: 5%;
     width: 100%;
     display: flex;
     justify-content: space-between;
-    padding: 0 5%;
-    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    flex: 1 1 0;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5rem;
+    background-color: #fcfcfc;
+    padding: 1rem;
+    margin: 0 20vw;
+    border-radius: 8px;
 }
 
 .ctrlBtn {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
     backdrop-filter: blur(10px);
-    padding: 15px 30px;
+    padding: 0.5rem;
     cursor: pointer;
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 700;
-    letter-spacing: 2px;
+    font-weight: 500;
+    letter-spacing: 1px;
 }
 
 .ctrlBtn:hover {
     background: rgba(255, 255, 255, 0.5);
     transform: scale(1.05);
 }
+
+.topBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+.bold {
+    font-weight: 800;
+    font-style: normal;
+    font-size: 1.25rem;
+}
+.logo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-style: italic;
+}
+

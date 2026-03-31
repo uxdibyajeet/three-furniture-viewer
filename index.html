@@ -12,12 +12,18 @@
     <!-- 2d interface -->
      <div class="appInterface">
         <header class="topBar">
-          <h1>Furniture Viewer App</h1>
+          <span class="logo">Furniture<span class="bold">Visualization</span></span>
           <div id="toolTip" class="hidden">Click to view details</div>
+          <button class="ctrlBtn">
+            <img src="./public/icons/grip.svg" width="24" height="24">
+            menu
+          </button>
         </header>
         <div class="navControls">
-            <button id="prevBtn" class="ctrlBtn">Prev</button>
-            <button id="nextBtn" class="ctrlBtn">Next</button>
+          <div class="container">
+            <button id="prevBtn" class="ctrlBtn"><img src="./public/icons/arrow-left.svg" width="24" height="24">Prev</button>
+            <button id="nextBtn" class="ctrlBtn">Next <img src="./public/icons/arrow-right.svg" width="24" height="24"></button>
+          </div>
         </div>
         <!-- modal -->
          <div class="modal hidden">
