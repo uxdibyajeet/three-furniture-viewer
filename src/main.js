@@ -2,15 +2,31 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import { DRACOLoader } from "three/examples/jsm/Addons.js";
+import { HDRLoader } from "three/examples/jsm/Addons.js";
+
 // scene
 const myScene = new THREE.Scene();
-myScene.background = new THREE.Color(0x222222);
+const bgColor = new THREE.Color();
+const hdriLoader = new HDRLoader().load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_08_1k.hdr', (texture) => {
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  myScene.environment = texture;
+
+  //bg color
+  bgColor.setHSL(0.5, 0.1, 0.9);
+  myScene.background = bgColor;
+  // texture.dispose();
+});
+
 
 // Renderer - canvas
 // defaults
   let screenWidth = window.innerWidth; //fetch browser width 
   let screenHeight = window.innerHeight; //fetch browser height
-const threeRenderer = new THREE.WebGLRenderer({antialias: true});
+  const threeRenderer = new THREE.WebGLRenderer({antialias: true});
+// tone mapping
+threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+threeRenderer.toneMappingExposure = 1.2; // Adjust this to make it brighter/darker
+threeRenderer.outputColorSpace = THREE.SRGBColorSpace;
 threeRenderer.setSize(screenWidth, screenHeight); //renderer
 document.body.appendChild(threeRenderer.domElement);
 
