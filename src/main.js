@@ -4,6 +4,39 @@ import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import { DRACOLoader } from "three/examples/jsm/Addons.js";
 import { HDRLoader } from "three/examples/jsm/Addons.js";
 
+//DATA
+let currentIndex = 0;
+const furnitureData = [
+    {
+      id: 0,
+      name: "Geometric Accent Chair",
+      description: "Handcrafted with premium ash wood and velvet upholstery. A study in post-modern silhouettes.",
+      specs: ["W: 75cm", "D: 80cm", "H: 95cm"],
+      path: "./models/Chair_01.glb",
+      visuals: {
+        exposure: 0.5, 
+        bgHex: "#f0f0f0", 
+        envBlur: 0.25,
+        envIntensity: 1.0,
+        lightIntensity: 1.0
+      }
+    },
+    {
+      id: 1,
+      name: "Minimal Chair",
+      description: "Handcrafted with premium ash wood and velvet upholstery. A study in post-modern silhouettes.",
+      specs: ["W: 75cm", "D: 80cm", "H: 95cm"],
+      path: "./models/Chair_02.glb",
+      visuals: {
+        exposure: 0.5, 
+        bgHex: "#f0f0f0", 
+        envBlur: 0.25,
+        envIntensity: 1.0,
+        lightIntensity: 1.0
+      }
+    }
+];
+
 //Scene SETUP
 const myScene = new THREE.Scene();
 let screenWidth = window.innerWidth;
@@ -59,7 +92,6 @@ function updateSceneVisuals({
 }
 
 // Environment HDRI Lighting
-let currentIndex = 0;
 const hdriLoader = new HDRLoader().load(
     'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_08_1k.hdr', 
     (texture) => {
@@ -93,9 +125,7 @@ gltfLoader.load('./models/Chair_02.glb', (gltf) => {
     console.log("Model Loaded Successfully");
 });
 
-/**
- * 5. ANIMATION & RESPONSIVENESS
- */
+// rotation animation
 function animate() {
     requestAnimationFrame(animate);
     if (currentModel) {
@@ -117,34 +147,101 @@ window.addEventListener('resize', () => {
     threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
-/**
- * 6. UI & DATA
- */
-const furnitureData = [
-    {
-      id: 0,
-      name: "Geometric Accent Chair",
-      description: "Handcrafted with premium ash wood and velvet upholstery. A study in post-modern silhouettes.",
-      specs: ["W: 75cm", "D: 80cm", "H: 95cm"],
-      visuals: {
-        exposure: 0.5, 
-        bgHex: "#f0f0f0", 
-        envBlur: 0.25,
-        envIntensity: 1.0,
-        lightIntensity: 1.0
-      }
-    }
-];
 
 function openModal(itemIndex) {
     const item = furnitureData[itemIndex];
-    if (!item) return;
+    if (!item) {
+      console.error("No item found at index:", itemIndex);
+      return
+    };
 
     document.querySelector('.modelTitle').textContent = item.name;
     document.querySelector('.modelDesc').textContent = item.description;
     
-    const specsList = document.querySelector('#modelSpecs');
+    const specsList = document.querySelector('.modelSpecs');
     specsList.innerHTML = item.specs.map(s => `<li>${s}</li>`).join('');
     
     document.querySelector('.modal').classList.remove('hidden');
-}
+};
+
+function changeFurniture(direction) {
+  if(direction === 'next') {
+    currentIndex = (currentIndex + 1) % furnitureData.length;
+  } else {
+    currentIndex = (currentIndex -1 + furnitureData.length) % furnitureData.length;
+  }
+
+  const item = furnitureData[currentIndex];
+
+  if (currentModel) {
+    myScene.remove(currentModel);
+  }
+
+  gltfLoader.load(item.path, (gltf) => {
+    currentModel = gltf.scene;
+
+    currentModel.position.y = -1.75;
+    currentModel.scale.set(1.5, 1.5, 1.5);
+
+    myScene.add(currentModel);
+    updateSceneVisuals(item.visuals);
+
+    const productTitle = document.querySelector('.productTitle');
+    if(productTitle) productTitle.textContent = item.name;
+    console.log(`Switched to: ${item.name}`);
+  });
+};
+
+// Global Event Listner and interaction handler
+function handleInteractions(event){
+  const target = event.target.closest(`[data-action]`);
+
+  if(!target) return;
+
+  const action = target.getAttribute('data-action');
+
+  switch (action) {
+    case 'next': 
+        changeFurniture('next');
+        break;
+    case 'prev': 
+        changeFurniture('prev');
+        break;
+    case 'open-modal':
+        openModal(currentIndex);
+        break;
+    case 'close-modal':
+        document.querySelector('.modal').classList.add('hidden');
+        break;
+    default:
+        console.log("Action not defined:", action);
+  }
+};
+
+// Raycaster
+const rayCaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+function handleModelClick(event) {
+    // 1. Convert mouse position to -1 to +1 range
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // 2. Update the raycaster with the camera and mouse position
+    rayCaster.setFromCamera(mouse, mainCamera);
+
+    // 3. Calculate objects intersecting the picking ray
+    if (currentModel) {
+        // We check the 'children' because the model is a Group of meshes
+        const intersects = rayCaster.intersectObjects(currentModel.children, true);
+
+        if (intersects.length > 0) {
+            console.log("3D Model Clicked, Respected Sir!");
+            openModal(currentIndex);
+        }
+    }
+};
+// 2D event listners
+const navControls = document.querySelector('.navControls');
+navControls.addEventListener('click', handleInteractions);
+window.addEventListener('click', handleModelClick);
+document.body.addEventListener('click', handleInteractions);
