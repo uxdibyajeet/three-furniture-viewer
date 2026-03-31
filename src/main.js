@@ -15,6 +15,7 @@ const furnitureData = [
       description: "Handcrafted with premium ash wood and velvet upholstery. A study in post-modern silhouettes.",
       specs: ["W: 75cm", "D: 80cm", "H: 95cm"],
       path: "./models/Chair_01.glb",
+      hotspotPos: { x: 0.5, y: 0.2, z: 0.6 },
       visuals: {
         exposure: 0.5, 
         bgHex: "#fafafa", 
@@ -29,6 +30,7 @@ const furnitureData = [
       description: "Handcrafted with premium ash wood and velvet upholstery. A study in post-modern silhouettes.",
       specs: ["W: 75cm", "D: 80cm", "H: 95cm"],
       path: "./models/Chair_02.glb",
+      hotspotPos: { x: 0.5, y: 0.2, z: 0.6 },
       visuals: {
         exposure: 0.5, 
         bgHex: "#f0f0f0", 
@@ -132,22 +134,24 @@ function initGallery() {
   
   gltfLoader.load(item.path, (gltf) => {
     currentModel = gltf.scene;
-    
-    // Center logic
+
+    // 1. Center the model's geometry
     const box = new THREE.Box3().setFromObject(currentModel);
     const center = box.getCenter(new THREE.Vector3());
-    
-    currentModel.position.y = -1.75;
-    currentModel.scale.set(1.5, 1.5, 1.5);
     currentModel.position.x += (currentModel.position.x - center.x);
     currentModel.position.z += (currentModel.position.z - center.z);
-    
+    currentModel.position.y = -1.75; 
+
+    currentModel.scale.set(1.5, 1.5, 1.5); 
     myScene.add(currentModel);
-    console.log("Model Loaded Successfully");
-    myScene.add(activeHotspot);
-    activeHotspot.position.set(0, 0.5, 0);
-});
-};
+
+    // 2. Attach Hotspot using your custom data coordinates
+    currentModel.add(activeHotspot);
+    activeHotspot.position.set(item.hotspotPos.x, item.hotspotPos.y, item.hotspotPos.z); 
+
+    updateSceneVisuals(item.visuals);
+  });
+}
 
 // particles!
 const particleCount = 400;
@@ -219,7 +223,6 @@ function openModal(itemIndex) {
 };
 
 function changeFurniture(direction) {
-  // 1. Update Index
   if (direction === 'next') {
     currentIndex = (currentIndex + 1) % furnitureData.length;
   } else {
@@ -228,48 +231,49 @@ function changeFurniture(direction) {
 
   const item = furnitureData[currentIndex];
 
-  // 2. Clean up the old model
   if (currentModel) {
     disposeModel(currentModel);
     currentModel = null;
   }
 
-  // 3. Load the new model
   gltfLoader.load(item.path, (gltf) => {
     currentModel = gltf.scene;
 
-    // Set starting position (Off-screen)
-    const startX = direction === 'next' ? 4 : -4;
-    currentModel.position.set(startX, -1.75, 0);
-    
-    // Start slightly smaller for a "pop-in" effect
-    currentModel.scale.set(1.2, 1.2, 1.2); 
+    // 1. Center the model
+    const box = new THREE.Box3().setFromObject(currentModel);
+    const center = box.getCenter(new THREE.Vector3());
+    currentModel.position.x += (currentModel.position.x - center.x);
+    currentModel.position.z += (currentModel.position.z - center.z);
+    currentModel.position.y = -1.75;
 
+    // 2. Prep the GSAP Slide
+    const startXOffset = direction === 'next' ? 4 : -4;
+    const finalCenteredX = currentModel.position.x; // Save the "centered" zero
+    currentModel.position.x += startXOffset; // Move it off-screen to start
+    
+    currentModel.scale.set(1.2, 1.2, 1.2); 
     myScene.add(currentModel);
 
-    // --- GSAP ANIMATION ---
-    // Slide to center (0) and scale to full size (1.5)
+    // 3. Attach Hotspot
+    currentModel.add(activeHotspot);
+    activeHotspot.position.set(item.hotspotPos.x, item.hotspotPos.y, item.hotspotPos.z);
+
+    // 4. Run Animations
     gsap.to(currentModel.position, {
-      x: 0,
+      x: finalCenteredX,
       duration: 1.2,
-      ease: "power4.out" // "Power4" is very smooth for premium UI
+      ease: "power4.out"
     });
 
     gsap.to(currentModel.scale, {
-      x: 1.5,
-      y: 1.5,
-      z: 1.5,
+      x: 1.5, y: 1.5, z: 1.5,
       duration: 1.0,
-      ease: "back.out(1.7)" // Adds a tiny "bounce" at the end
+      ease: "back.out(1.7)"
     });
 
-    // 4. Update UI & Lighting
     updateSceneVisuals(item.visuals);
     const productTitle = document.querySelector('.productTitle');
     if (productTitle) productTitle.textContent = item.name;
-
-    // Update Hotspot position for the new model
-    activeHotspot.position.set(0, 0.5, 0);
   });
 }
 
@@ -330,12 +334,14 @@ function cleanMaterial(material) {
 function createHotspot() {
     const hotspotDiv = document.createElement('div');
     hotspotDiv.className = 'hotspot';
-    hotspotDiv.textContent = '+';
-    hotspotDiv.style.pointerEvents = 'auto'; // Re-enable clicks for the button itself
+    // No textContent needed, CSS handles the visuals
     hotspotDiv.setAttribute('data-action', 'open-modal');
 
     const hotspotLabel = new CSS2DObject(hotspotDiv);
-    hotspotLabel.position.set(0, 0.5, 0); // Position it slightly above the chair center
+    
+    // Position: x: 0.8 (right), y: -1.5 (near feet), z: 0.5 (front)
+    hotspotLabel.position.set(0.8, -1.5, 0.5);
+    hotspotLabel.element.style.zIndex = '1000';
     return hotspotLabel;
 }
 
