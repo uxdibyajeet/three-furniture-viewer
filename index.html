@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>three-furniture-viewer</title>
+    <script type="module" crossorigin src="./assets/index-BGqghbWI.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-D_BsHhXs.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- 2d interface -->
+     <div class="appInterface">
+        <header class="topBar">
+          <span class="logo">Furniture<span class="bold">Visualization</span></span>
+          <div id="toolTip" class="hidden">Click to view details</div>
+          <button class="ctrlBtn">
+            <img src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M12%206C12.5523%206%2013%205.55228%2013%205C13%204.44772%2012.5523%204%2012%204C11.4477%204%2011%204.44772%2011%205C11%205.55228%2011.4477%206%2012%206Z'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3cpath%20d='M19%206C19.5523%206%2020%205.55228%2020%205C20%204.44772%2019.5523%204%2019%204C18.4477%204%2018%204.44772%2018%205C18%205.55228%2018.4477%206%2019%206Z'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3cpath%20d='M5%206C5.55228%206%206%205.55228%206%205C6%204.44772%205.55228%204%205%204C4.44772%204%204%204.44772%204%205C4%205.55228%204.44772%206%205%206Z'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3cpath%20d='M12%2013C12.5523%2013%2013%2012.5523%2013%2012C13%2011.4477%2012.5523%2011%2012%2011C11.4477%2011%2011%2011.4477%2011%2012C11%2012.5523%2011.4477%2013%2012%2013Z'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3cpath%20d='M19%2013C19.5523%2013%2020%2012.5523%2020%2012C20%2011.4477%2019.5523%2011%2019%2011C18.4477%2011%2018%2011.4477%2018%2012C18%2012.5523%2018.4477%2013%2019%2013Z'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3cpath%20d='M5%2013C5.55228%2013%206%2012.5523%206%2012C6%2011.4477%205.55228%2011%205%2011C4.44772%2011%204%2011.4477%204%2012C4%2012.5523%204.44772%2013%205%2013Z'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3cpath%20d='M12%2020C12.5523%2020%2013%2019.5523%2013%2019C13%2018.4477%2012.5523%2018%2012%2018C11.4477%2018%2011%2018.4477%2011%2019C11%2019.5523%2011.4477%2020%2012%2020Z'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3cpath%20d='M19%2020C19.5523%2020%2020%2019.5523%2020%2019C20%2018.4477%2019.5523%2018%2019%2018C18.4477%2018%2018%2018.4477%2018%2019C18%2019.5523%2018.4477%2020%2019%2020Z'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3cpath%20d='M5%2020C5.55228%2020%206%2019.5523%206%2019C6%2018.4477%205.55228%2018%205%2018C4.44772%2018%204%2018.4477%204%2019C4%2019.5523%204.44772%2020%205%2020Z'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/svg%3e" width="24" height="24">
+            menu
+          </button>
+        </header>
+        <div class="navControls">
+          <div class="container">
+            <button id="prevBtn" class="ctrlBtn"><img src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M12%2019L5%2012M5%2012L12%205M5%2012H19'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/svg%3e" width="24" height="24">Prev</button>
+            <button id="nextBtn" class="ctrlBtn">Next <img src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M5%2012H19M19%2012L12%205M19%2012L12%2019'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/svg%3e" width="24" height="24"></button>
+          </div>
+        </div>
+        <!-- modal -->
+         <div class="modal hidden">
+          <div class="content">
+            <button id="closeModal">x</button>
+            <h2 class="modelTitle">Product Title</h2>
+            <p class="modelDesc">Details goes here...</p>
+            <ul id="modelSpecs"></ul>
+          </div>
+         </div>
+     </div>
+  </body>
+</html>
