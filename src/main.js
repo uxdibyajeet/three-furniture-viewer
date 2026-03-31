@@ -4,6 +4,7 @@ import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import { DRACOLoader } from "three/examples/jsm/Addons.js";
 import { HDRLoader } from "three/examples/jsm/Addons.js";
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/Addons.js';
+import { gsap } from "gsap";
 
 //DATA
 let currentIndex = 0;
@@ -16,7 +17,7 @@ const furnitureData = [
       path: "./models/Chair_01.glb",
       visuals: {
         exposure: 0.5, 
-        bgHex: "#f0f0f0", 
+        bgHex: "#fafafa", 
         envBlur: 0.25,
         envIntensity: 1.0,
         lightIntensity: 1.0
@@ -148,9 +149,37 @@ function initGallery() {
 });
 };
 
+// particles!
+const particleCount = 400;
+const particleGeometry = new THREE.BufferGeometry();
+const particlePositions = new Float32Array(particleCount * 3);
+
+// 2. Scatter particles in a large cube around the chair
+for (let i = 0; i < particleCount * 3; i++) {
+    particlePositions[i] = (Math.random() - 0.5) * 15; 
+}
+
+particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(particlePositions, 3));
+
+const particleMaterial = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 0.02,
+    transparent: true,
+    opacity: 0.4,
+    blending: THREE.AdditiveBlending // Makes them "glow" against the background
+});
+
+const dustParticles = new THREE.Points(particleGeometry, particleMaterial);
+myScene.add(dustParticles);
+
 // rotation animation
 function animate() {
     requestAnimationFrame(animate);
+
+    // Rotate the whole dust cloud slowly
+    dustParticles.rotation.y += 0.0005;
+    dustParticles.rotation.x += 0.0002;
+
     if (currentModel) {
         currentModel.rotation.y += 0.00025;
     }
@@ -190,33 +219,59 @@ function openModal(itemIndex) {
 };
 
 function changeFurniture(direction) {
-  if(direction === 'next') {
+  // 1. Update Index
+  if (direction === 'next') {
     currentIndex = (currentIndex + 1) % furnitureData.length;
   } else {
-    currentIndex = (currentIndex -1 + furnitureData.length) % furnitureData.length;
+    currentIndex = (currentIndex - 1 + furnitureData.length) % furnitureData.length;
   }
 
   const item = furnitureData[currentIndex];
 
+  // 2. Clean up the old model
   if (currentModel) {
     disposeModel(currentModel);
-    currentModel = null
+    currentModel = null;
   }
 
+  // 3. Load the new model
   gltfLoader.load(item.path, (gltf) => {
     currentModel = gltf.scene;
 
-    currentModel.position.y = -1.75;
-    currentModel.scale.set(1.5, 1.5, 1.5);
+    // Set starting position (Off-screen)
+    const startX = direction === 'next' ? 4 : -4;
+    currentModel.position.set(startX, -1.75, 0);
+    
+    // Start slightly smaller for a "pop-in" effect
+    currentModel.scale.set(1.2, 1.2, 1.2); 
 
     myScene.add(currentModel);
-    updateSceneVisuals(item.visuals);
 
+    // --- GSAP ANIMATION ---
+    // Slide to center (0) and scale to full size (1.5)
+    gsap.to(currentModel.position, {
+      x: 0,
+      duration: 1.2,
+      ease: "power4.out" // "Power4" is very smooth for premium UI
+    });
+
+    gsap.to(currentModel.scale, {
+      x: 1.5,
+      y: 1.5,
+      z: 1.5,
+      duration: 1.0,
+      ease: "back.out(1.7)" // Adds a tiny "bounce" at the end
+    });
+
+    // 4. Update UI & Lighting
+    updateSceneVisuals(item.visuals);
     const productTitle = document.querySelector('.productTitle');
-    if(productTitle) productTitle.textContent = item.name;
-    console.log(`Switched to: ${item.name}`);
+    if (productTitle) productTitle.textContent = item.name;
+
+    // Update Hotspot position for the new model
+    activeHotspot.position.set(0, 0.5, 0);
   });
-};
+}
 
 // Global Event Listner and interaction handler
 function handleInteractions(event){
