@@ -9,6 +9,26 @@
   </head>
   <body>
     <div id="app"></div>
+    <!-- 2d interface -->
+     <div class="appInterface">
+        <header class="topBar">
+          <h1>Furniture Viewer App</h1>
+          <div id="toolTip" class="hidden">Click to view details</div>
+        </header>
+        <div class="navControls">
+            <button id="prevBtn" class="ctrlBtn">Prev</button>
+            <button id="nextBtn" class="ctrlBtn">Next</button>
+        </div>
+        <!-- modal -->
+         <div class="modal hidden">
+          <div class="content">
+            <button id="closeModal">x</button>
+            <h2 class="modelTitle">Product Title</h2>
+            <p class="modelDesc">Details goes here...</p>
+            <ul id="modelSpecs"></ul>
+          </div>
+         </div>
+     </div>
     <script type="module" src="./src/main.js"></script>
   </body>
 </html>

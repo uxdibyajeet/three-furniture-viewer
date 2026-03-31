@@ -12,7 +12,7 @@ const hdriLoader = new HDRLoader().load('https://dl.polyhaven.org/file/ph-assets
   myScene.environment = texture;
 
   //bg color
-  bgColor.setHSL(0.5, 0.1, 0.9);
+  bgColor.setHSL(0.25, 0.15, 0.8);
   myScene.background = bgColor;
   // texture.dispose();
 });
@@ -72,7 +72,7 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
 // importing custom model
-gltfLoader.load ('./models/Chair_01.glb', (gltf) => {
+gltfLoader.load ('./models/Chair_02.glb', (gltf) => {
   currentModel = gltf.scene;
   const box = new THREE.Box3().setFromObject(currentModel);
   const center = box.getCenter(new THREE.Vector3());
@@ -100,3 +100,33 @@ window.addEventListener('resize', () => {
   threeRenderer.setSize(screenWidth, screenHeight);
   threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
+
+
+// 2d Element
+const furnitureData = [
+  {
+    id: 0,
+    name: "Geometric Accent Chair",
+    path: "./models/Chair_02.glb",
+    description: "Handcrafted with premium ash wood and velvet upholstery. A study in post-modern silhouettes.",
+    specs: ["W: 75cm", "D: 80cm", "H: 95cm"],
+    hue: 0.5 // Your HSL Hue
+  },
+  // Add Table_01 here once ready!
+];
+
+let currentIndex = 0;
+
+function openModal(itemIndex) {
+    const item = furnitureData[itemIndex];
+    const title = document.querySelector('.modelTitle');
+    title.textContent = item.name;
+    const desc = document.querySelector('.modelDesc');
+    desc.textContent = item.description;
+    
+    const specsList = document.querySelector('#modelSpecs');
+    specsList.innerHTML = item.specs.map(s => `<li>${s}</li>`).join('');
+    
+    document.querySelector('.modal').classList.remove('hidden');
+}
+// openModal(currentIndex);
