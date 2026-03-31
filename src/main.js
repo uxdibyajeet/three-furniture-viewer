@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import { DRACOLoader } from "three/examples/jsm/Addons.js";
 import { HDRLoader } from "three/examples/jsm/Addons.js";
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/Addons.js';
 
 //DATA
 let currentIndex = 0;
@@ -36,6 +37,19 @@ const furnitureData = [
       }
     }
 ];
+
+// Initialize 2D Label Renderer
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+
+// Access the style through the domElement, not the renderer itself
+const labelStyle = labelRenderer.domElement.style;
+labelStyle.position = 'absolute';
+labelStyle.top = '0';
+labelStyle.left = '0';
+labelStyle.pointerEvents = 'none'; // Allows OrbitControls to work "through" the labels
+
+document.body.appendChild(labelRenderer.domElement);
 
 //Scene SETUP
 const myScene = new THREE.Scene();
@@ -109,7 +123,13 @@ gltfLoader.setDRACOLoader(dracoLoader);
 
 let currentModel;
 
-gltfLoader.load('./models/Chair_02.glb', (gltf) => {
+//model loader 
+function initGallery() {
+  const item = furnitureData[currentIndex];
+  const productTitle = document.querySelector('.productTitle');
+  if (productTitle) productTitle.textContent = item.name;
+  
+  gltfLoader.load(item.path, (gltf) => {
     currentModel = gltf.scene;
     
     // Center logic
@@ -123,7 +143,10 @@ gltfLoader.load('./models/Chair_02.glb', (gltf) => {
     
     myScene.add(currentModel);
     console.log("Model Loaded Successfully");
+    myScene.add(activeHotspot);
+    activeHotspot.position.set(0, 0.5, 0);
 });
+};
 
 // rotation animation
 function animate() {
@@ -133,6 +156,7 @@ function animate() {
     }
     controls.update();
     threeRenderer.render(myScene, mainCamera);
+    labelRenderer.render(myScene, mainCamera);
 }
 animate();
 
@@ -145,6 +169,7 @@ window.addEventListener('resize', () => {
     
     threeRenderer.setSize(screenWidth, screenHeight);
     threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
 });
 
 
@@ -174,7 +199,8 @@ function changeFurniture(direction) {
   const item = furnitureData[currentIndex];
 
   if (currentModel) {
-    myScene.remove(currentModel);
+    disposeModel(currentModel);
+    currentModel = null
   }
 
   gltfLoader.load(item.path, (gltf) => {
@@ -218,30 +244,47 @@ function handleInteractions(event){
   }
 };
 
-// Raycaster
-const rayCaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-function handleModelClick(event) {
-    // 1. Convert mouse position to -1 to +1 range
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+// refresh canvas 
+function disposeModel(model) {
+    if (!model) return;
+    
+    model.traverse((node) => {
+        if (node.isMesh) {
+            node.geometry.dispose();
+            if (node.material.isMaterial) {
+                cleanMaterial(node.material);
+            } else {
+                for (const material of node.material) cleanMaterial(material);
+            }
+        }
+    });
+    myScene.remove(model);
+}
 
-    // 2. Update the raycaster with the camera and mouse position
-    rayCaster.setFromCamera(mouse, mainCamera);
-
-    // 3. Calculate objects intersecting the picking ray
-    if (currentModel) {
-        // We check the 'children' because the model is a Group of meshes
-        const intersects = rayCaster.intersectObjects(currentModel.children, true);
-
-        if (intersects.length > 0) {
-            console.log("3D Model Clicked, Respected Sir!");
-            openModal(currentIndex);
+function cleanMaterial(material) {
+    material.dispose();
+    for (const key of Object.keys(material)) {
+        if (material[key] && material[key].isTexture) {
+            material[key].dispose();
         }
     }
-};
+}
+
+
+//hotspot function
+function createHotspot() {
+    const hotspotDiv = document.createElement('div');
+    hotspotDiv.className = 'hotspot';
+    hotspotDiv.textContent = '+';
+    hotspotDiv.style.pointerEvents = 'auto'; // Re-enable clicks for the button itself
+    hotspotDiv.setAttribute('data-action', 'open-modal');
+
+    const hotspotLabel = new CSS2DObject(hotspotDiv);
+    hotspotLabel.position.set(0, 0.5, 0); // Position it slightly above the chair center
+    return hotspotLabel;
+}
+
+let activeHotspot = createHotspot();
 // 2D event listners
-const navControls = document.querySelector('.navControls');
-navControls.addEventListener('click', handleInteractions);
-window.addEventListener('click', handleModelClick);
 document.body.addEventListener('click', handleInteractions);
+initGallery();
