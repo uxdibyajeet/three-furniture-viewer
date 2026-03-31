@@ -5,8 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>three-furniture-viewer</title>
-    <script type="module" crossorigin src="./assets/index-BGqghbWI.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-D_BsHhXs.css">
+    <script type="module" crossorigin src="./assets/index-K0T1Ww0T.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DOJ8pfaM.css">
   </head>
   <body>
     <div id="app"></div>
@@ -20,19 +20,20 @@
             menu
           </button>
         </header>
+        <h2 class="productTitle">title</h2>
         <div class="navControls">
           <div class="container">
-            <button id="prevBtn" class="ctrlBtn"><img src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M12%2019L5%2012M5%2012L12%205M5%2012H19'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/svg%3e" width="24" height="24">Prev</button>
-            <button id="nextBtn" class="ctrlBtn">Next <img src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M5%2012H19M19%2012L12%205M19%2012L12%2019'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/svg%3e" width="24" height="24"></button>
+            <button data-action="prev" class="ctrlBtn prevBtn"><img src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M12%2019L5%2012M5%2012L12%205M5%2012H19'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/svg%3e" width="24" height="24">Prev</button>
+            <button data-action="next" class="ctrlBtn nextBtn">Next <img src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M5%2012H19M19%2012L12%205M19%2012L12%2019'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/svg%3e" width="24" height="24"></button>
           </div>
         </div>
         <!-- modal -->
          <div class="modal hidden">
           <div class="content">
-            <button id="closeModal">x</button>
+            <button data-action="close-modal" class="closeModal">x</button>
             <h2 class="modelTitle">Product Title</h2>
             <p class="modelDesc">Details goes here...</p>
-            <ul id="modelSpecs"></ul>
+            <ul class="modelSpecs"></ul>
           </div>
          </div>
      </div>
